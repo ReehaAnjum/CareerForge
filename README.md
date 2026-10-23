@@ -126,3 +126,4 @@ git push -u origin main
 ```
 
 Replace the remote URL with your repository's URL. Authenticate to GitHub using Git Credential Manager or GitHub CLI; do not put a password or token in the remote URL. `.gitignore` excludes `.env`, virtual environments, local databases, and test artifacts. Commit `.env.example`, never a real `.env`, database, password, secret key, or student record.
+CareerForge uses Jenkins to automate testing.
