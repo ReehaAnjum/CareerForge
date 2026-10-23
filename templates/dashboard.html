@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · CareerForge{% endblock %}
+{% block content %}
+  <section class="dashboard-welcome">
+    <div><p class="eyebrow">YOUR PREPARATION AT A GLANCE</p><h1>Welcome back, {{ g.user.username }}.</h1><p class="muted">Keep showing up. The progress is adding up.</p></div>
+    <a href="{{ url_for('practice.index') }}" class="button">Log practice <span aria-hidden="true">→</span></a>
+  </section>
+  <section class="dashboard-grid">
+    <article class="panel score-panel">
+      <div class="section-heading"><div><p class="eyebrow">PLACEMENT READINESS</p><h2>Your readiness score</h2></div><span class="tooltip-mark" title="Weighted snapshot of skills, coding practice, and interview preparation.">i</span></div>
+      <div class="score-layout">
+        <div class="score-ring" role="img" aria-label="Placement readiness score: {{ readiness.overall }} out of 100" style="--score: {{ readiness.overall }}%">
+          <div class="score-ring-inner"><strong>{{ readiness.overall }}</strong><span>out of 100</span></div>
+        </div>
+        <div class="chart-area">
+          <h3 class="chart-title">Readiness by area</h3>
+          <div class="bar-chart" role="img" aria-label="Bar chart: skills {{ readiness.skills }} percent, coding {{ readiness.coding }} percent, interview {{ readiness.interview }} percent">
+            <div class="chart-row"><span>Skills</span><div class="chart-track"><i class="bar-skills" style="width: {{ readiness.skills }}%"></i></div><b>{{ readiness.skills }}%</b></div>
+            <div class="chart-row"><span>Coding</span><div class="chart-track"><i class="bar-coding" style="width: {{ readiness.coding }}%"></i></div><b>{{ readiness.coding }}%</b></div>
+            <div class="chart-row"><span>Interview</span><div class="chart-track"><i class="bar-interview" style="width: {{ readiness.interview }}%"></i></div><b>{{ readiness.interview }}%</b></div>
+          </div>
+          <p class="chart-caption">A guide to your preparation—not a hiring prediction.</p>
+        </div>
+      </div>
+      <div class="score-footnote">Weighted from technical skills ({{ (weights.skills * 100)|int }}%), coding ({{ (weights.coding * 100)|int }}%), and interview preparation ({{ (weights.interview * 100)|int }}%).</div>
+    </article>
+    <article class="panel suggestion-panel">
+      <p class="eyebrow">YOUR NEXT GOOD MOVE</p><h2>Keep your momentum</h2>
+      <p class="muted">Choose one small action and make it count today.</p>
+      <div class="suggestion-list">
+        {% for message, endpoint in suggestions %}
+          <a class="suggestion-item" href="{{ url_for(endpoint) }}"><span class="suggestion-check">↗</span><span>{{ message }}</span></a>
+        {% endfor %}
+      </div>
+      <a class="text-link" href="{{ url_for('practice.index') }}">Open practice trackers <span aria-hidden="true">→</span></a>
+    </article>
+  </section>
+  <section class="stat-grid">
+    <article class="stat-card"><span class="stat-icon icon-blue">✦</span><div><p>Technical skills</p><strong>{{ skills|length }}</strong><small>tracked in your profile</small></div><a href="{{ url_for('skills.index') }}" aria-label="Manage skills">→</a></article>
+    <article class="stat-card"><span class="stat-icon icon-green">⌘</span><div><p>Coding problems</p><strong>{{ solved_count }}<small class="stat-total"> / {{ coding_target }}</small></strong><small>toward your practice goal</small></div><a href="{{ url_for('practice.index') }}" aria-label="View coding practice">→</a></article>
+    <article class="stat-card"><span class="stat-icon icon-amber">◷</span><div><p>Interview topics</p><strong>{{ interview_completed }}<small class="stat-total"> / {{ interview_topics|length }}</small></strong><small>topics prepared</small></div><a href="{{ url_for('practice.index') }}" aria-label="View interview preparation">→</a></article>
+  </section>
+  <section class="content-grid dashboard-lists">
+    <article class="panel">
+      <div class="section-heading"><div><p class="eyebrow">YOUR TOOLKIT</p><h2>Skills to build on</h2></div><a class="text-link" href="{{ url_for('skills.index') }}">Manage <span aria-hidden="true">→</span></a></div>
+      {% if skills %}
+        <div class="dashboard-records">
+          {% for skill in skills[:4] %}
+            <div class="dashboard-skill"><div><strong>{{ skill.name }}</strong><span>{{ skill.category or "General" }}</span></div><span class="level-badge">Level {{ skill.level }}/5</span></div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-inline"><p>No skills added yet.</p><a href="{{ url_for('skills.index') }}">Add your first skill →</a></div>
+      {% endif %}
+    </article>
+    <article class="panel">
+      <div class="section-heading"><div><p class="eyebrow">RECENT PRACTICE</p><h2>Small steps, daily</h2></div><a class="text-link" href="{{ url_for('practice.index') }}">View all <span aria-hidden="true">→</span></a></div>
+      {% if coding_logs %}
+        <div class="dashboard-records">
+          {% for log in coding_logs[:4] %}
+            <div class="dashboard-skill"><div><strong>{{ log.problem }}</strong><span>{{ log.topic }}</span></div><time>{{ log.practiced_at }}</time></div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-inline"><p>No practice logged yet.</p><a href="{{ url_for('practice.index') }}">Record a solved problem →</a></div>
+      {% endif %}
+    </article>
+  </section>
+{% endblock %}

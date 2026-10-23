@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Practice trackers · CareerForge{% endblock %}
+{% block content %}
+  <div class="page-heading">
+    <div><p class="eyebrow">CONSISTENCY BUILDS CONFIDENCE</p><h1>Practice trackers</h1><p class="muted">Keep a record of problems solved and interview topics you have prepared.</p></div>
+  </div>
+  <div class="content-grid tracker-grid">
+    <section class="panel">
+      <h2>Log a solved problem</h2>
+      <form action="{{ url_for('practice.add_coding_log') }}" method="post" class="form-stack">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Problem name<input name="problem" maxlength="120" placeholder="e.g. Two Sum" required></label>
+        <label>Topic<input name="topic" maxlength="80" placeholder="e.g. Arrays" required></label>
+        <label>Practice date<input name="practiced_at" type="date" max="{{ today }}" value="{{ today }}" required></label>
+        <button class="button" type="submit">Record problem</button>
+      </form>
+    </section>
+    <section class="panel">
+      <h2>Add interview topic</h2>
+      <form action="{{ url_for('practice.add_interview_topic') }}" method="post" class="form-stack">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Topic practised<input name="topic" maxlength="120" placeholder="e.g. Behavioral questions" required></label>
+        <label>Practice date<input name="practiced_at" type="date" max="{{ today }}" value="{{ today }}" required></label>
+        <label class="checkbox-label"><input name="completed" type="checkbox"> Mark as prepared</label>
+        <button class="button" type="submit">Add topic</button>
+      </form>
+    </section>
+  </div>
+  <div class="content-grid tracker-grid tracker-lists">
+    <section class="panel">
+      <div class="section-heading"><h2>Solved problems</h2><span class="count-badge">{{ coding_logs|length }}</span></div>
+      {% if coding_logs %}
+        <div class="record-list">
+          {% for log in coding_logs %}
+            <article class="tracker-row">
+              <div><h3>{{ log.problem }}</h3><p class="muted">{{ log.topic }} <span aria-hidden="true">·</span> {{ log.practiced_at }}</p></div>
+              <form action="{{ url_for('practice.delete_coding_log', record_id=log.id) }}" method="post" class="inline-form" data-confirm="Remove this solved problem?">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="icon-button" type="submit" aria-label="Delete {{ log.problem }}">×</button>
+              </form>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state"><span class="empty-icon">⌘</span><h3>Your practice starts here</h3><p>Log a problem when you solve it, and your progress will grow over time.</p></div>
+      {% endif %}
+    </section>
+    <section class="panel">
+      <div class="section-heading"><h2>Interview preparation</h2><span class="count-badge">{{ interview_topics|length }}</span></div>
+      {% if interview_topics %}
+        <div class="record-list">
+          {% for item in interview_topics %}
+            <article class="tracker-row">
+              <div class="topic-copy"><h3>{{ item.topic }}</h3><p class="muted">{{ item.practiced_at }}</p></div>
+              <div class="topic-actions">
+                <form action="{{ url_for('practice.toggle_interview_topic', record_id=item.id) }}" method="post" class="inline-form">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="status-pill {% if item.completed %}status-done{% else %}status-pending{% endif %}" type="submit">{{ "Prepared" if item.completed else "In progress" }}</button>
+                </form>
+                <form action="{{ url_for('practice.delete_interview_topic', record_id=item.id) }}" method="post" class="inline-form" data-confirm="Remove this interview topic?">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="icon-button" type="submit" aria-label="Delete {{ item.topic }}">×</button>
+                </form>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state"><span class="empty-icon">✧</span><h3>Plan your interview prep</h3><p>Add a topic to make it part of your preparation plan.</p></div>
+      {% endif %}
+    </section>
+  </div>
+{% endblock %}

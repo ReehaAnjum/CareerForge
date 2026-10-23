@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Create account · CareerForge{% endblock %}
+{% block content %}
+  <section class="auth-card">
+    <p class="eyebrow">START PREPARING</p>
+    <h1>Create your student account</h1>
+    <p class="muted">Track your preparation privately and build placement confidence.</p>
+    <form method="post" class="form-stack">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>Username
+        <input name="username" autocomplete="username" minlength="3" maxlength="32" required value="{{ request.form.get('username', '') }}">
+        <small>Use 3–32 letters, numbers, or underscores.</small>
+      </label>
+      <label>Password
+        <input name="password" type="password" autocomplete="new-password" minlength="8" required>
+      </label>
+      <label>Confirm password
+        <input name="confirm_password" type="password" autocomplete="new-password" minlength="8" required>
+      </label>
+      <button class="button" type="submit">Create account</button>
+    </form>
+    <p class="form-footnote">Already registered? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+  </section>
+{% endblock %}

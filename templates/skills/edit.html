@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Edit {{ skill.name }} · CareerForge{% endblock %}
+{% block content %}
+  <section class="auth-card">
+    <p class="eyebrow">REFINE YOUR PROFILE</p>
+    <h1>Edit skill</h1>
+    <form method="post" class="form-stack">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>Skill name<input name="name" maxlength="80" required value="{{ request.form.get('name', skill.name) }}"></label>
+      <label>Category<input name="category" maxlength="60" value="{{ request.form.get('category', skill.category) }}"></label>
+      <label>Proficiency
+        <select name="level" required>
+          {% for level in range(1, 6) %}
+            <option value="{{ level }}" {% if request.form.get('level', skill.level|string)|int == level %}selected{% endif %}>{{ level }} · {{ ["Beginner", "Learning", "Comfortable", "Proficient", "Advanced"][level - 1] }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <div class="form-actions"><button class="button" type="submit">Save changes</button><a class="button button-outline" href="{{ url_for('skills.index') }}">Cancel</a></div>
+    </form>
+  </section>
+{% endblock %}

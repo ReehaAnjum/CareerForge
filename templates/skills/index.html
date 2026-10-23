@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}My skills · CareerForge{% endblock %}
+{% block content %}
+  <div class="page-heading">
+    <div><p class="eyebrow">YOUR FOUNDATION</p><h1>Technical skills</h1><p class="muted">Keep an honest snapshot of the skills you are building.</p></div>
+  </div>
+  <div class="content-grid">
+    <section class="panel">
+      <h2>Add a skill</h2>
+      <form action="{{ url_for('skills.create') }}" method="post" class="form-stack">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Skill name<input name="name" maxlength="80" placeholder="e.g. Python" required></label>
+        <label>Category<input name="category" maxlength="60" placeholder="e.g. Programming"></label>
+        <label>Proficiency
+          <select name="level" required>
+            <option value="1">1 · Beginner</option>
+            <option value="2">2 · Learning</option>
+            <option value="3">3 · Comfortable</option>
+            <option value="4">4 · Proficient</option>
+            <option value="5">5 · Advanced</option>
+          </select>
+        </label>
+        <button class="button" type="submit">Add skill</button>
+      </form>
+    </section>
+    <section class="panel">
+      <div class="section-heading"><h2>Your skills</h2><span class="count-badge">{{ skills|length }}</span></div>
+      {% if skills %}
+        <div class="record-list">
+          {% for skill in skills %}
+            <article class="record-card">
+              <div class="record-main">
+                <div><h3>{{ skill.name }}</h3><p class="muted">{{ skill.category or "General" }}</p></div>
+                <span class="level-badge">Level {{ skill.level }}/5</span>
+              </div>
+              <div class="progress-track" aria-label="Proficiency level {{ skill.level }} out of 5"><span style="width: {{ skill.level * 20 }}%"></span></div>
+              <div class="record-actions">
+                <a class="button button-small button-outline" href="{{ url_for('skills.edit', skill_id=skill.id) }}">Edit</a>
+                <form action="{{ url_for('skills.delete', skill_id=skill.id) }}" method="post" class="inline-form" data-confirm="Remove {{ skill.name }} from your skills?">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="button button-small button-danger" type="submit">Delete</button>
+                </form>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state"><span class="empty-icon">✦</span><h3>No skills yet</h3><p>Add your first skill to start building your placement profile.</p></div>
+      {% endif %}
+    </section>
+  </div>
+{% endblock %}
