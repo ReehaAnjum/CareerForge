@@ -7,6 +7,7 @@ pipeline {
                 checkout scm
             }
         }
+
         stage('Install dependencies and test') {
             steps {
                 script {
@@ -22,6 +23,18 @@ pipeline {
             post {
                 always {
                     junit allowEmptyResults: true, testResults: 'pytest-report.xml'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        sh 'docker build -t careerforge:latest .'
+                    } else {
+    bat '"C:/Users/reeha/AppData/Local/Programs/DockerDesktop/resources/bin/docker.exe" build -t careerforge:latest .'
+}
                 }
             }
         }
